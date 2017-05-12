@@ -39,17 +39,19 @@ data<-cbind(subject_id,y_data,X_data)
 
 ## Step 2: extracting mean and standard deviation data
 meanstd<-grepl("mean|std", names(data))
-meanstd_data<-data[,meanstd]
+meanstd_data<-cbind(subject_id,y_data,data[,meanstd])
 
 ## Step 3: Using descriptive activity names for Y data
-data$Activity<-factor(data$Activity,labels=activity_labels[,2])
+meanstd_data$Activity<-factor(meanstd_data$Activity,labels=activity_labels[,2])
 
 ## step 4: Appropriately label the data set with descriptive variable names
-names(data) <- gsub("^t", "time_", names(data))
-names(data) <- gsub("^f", "frequency_", names(data))
+names(meanstd_data) <- gsub("^t", "time_", names(meanstd_data))
+names(meanstd_data) <- gsub("^f", "frequency_", names(meanstd_data))
 
 
 ## step 5: tidy data
-datamelt<-melt(data, id=c("subject_id","Activity"))
+datamelt<-melt(meanstd_data, id=c("subject_id","Activity"))
 datatidy<-dcast(datamelt,subject_id + Activity ~ variable, mean)
-write.csv(datatidy, "tidy.csv")
+##write.csv(datatidy, "tidy.csv")
+write.table(datatidy, "tidy.txt")
+
